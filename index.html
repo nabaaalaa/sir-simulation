@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>SIR Virus Simulation</title>
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
   <style>
     :root {
@@ -23,7 +23,7 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: 'Tajawal', sans-serif;
+      font-family: 'Inter', sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
@@ -217,7 +217,7 @@
       color: #fff;
       border: none;
       border-radius: 12px;
-      font-family: 'Tajawal', sans-serif;
+      font-family: 'Inter', sans-serif;
       font-size: 1rem;
       font-weight: 700;
       cursor: pointer;
@@ -240,7 +240,7 @@
       color: var(--text-muted);
       border: 1.5px solid var(--border);
       border-radius: 12px;
-      font-family: 'Tajawal', sans-serif;
+      font-family: 'Inter', sans-serif;
       font-size: 0.9rem;
       font-weight: 700;
       cursor: pointer;
@@ -407,8 +407,8 @@
 </header>
 
 <div class="hero">
-  <h1>محاكاة انتشار الفيروسات<br/><em>نموذج SIR</em></h1>
-  <p>أدخل معاملات النموذج وشاهد كيف ينتشر المرض عبر الزمن باستخدام طريقة أويلر العددية</p>
+  <h1>Virus Spread Simulation<br/><em>SIR Model</em></h1>
+  <p>Enter the model parameters and watch how a disease spreads over time using the Euler numerical method</p>
   <div class="hero-tags">
     <span class="tag tag-s">🔵 S – Susceptible</span>
     <span class="tag tag-i">🔴 I – Infected</span>
@@ -422,34 +422,34 @@
   <div class="panel">
     <div class="panel-title">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-      معاملات المحاكاة
+      Simulation Parameters
     </div>
 
     <div class="input-group">
-      <label>S — المعرّضون <span class="hint">Susceptible</span></label>
+      <label>S — Susceptible <span class="hint">Initial count</span></label>
       <input type="number" id="inp-S" value="990" min="0" step="1" placeholder="990"/>
     </div>
     <div class="input-group">
-      <label>I — المصابون <span class="hint">Infected</span></label>
+      <label>I — Infected <span class="hint">Initial count</span></label>
       <input type="number" id="inp-I" value="10" min="0" step="1" placeholder="10"/>
     </div>
     <div class="input-group">
-      <label>R — المتعافون <span class="hint">Recovered</span></label>
+      <label>R — Recovered <span class="hint">Initial count</span></label>
       <input type="number" id="inp-R" value="0" min="0" step="1" placeholder="0"/>
     </div>
 
     <div class="divider"></div>
 
     <div class="input-group">
-      <label>β — Beta <span class="hint">معدل الانتقال</span></label>
+      <label>β — Beta <span class="hint">Transmission rate</span></label>
       <input type="number" id="inp-beta" value="0.0003" min="0" step="0.0001" placeholder="0.0003"/>
     </div>
     <div class="input-group">
-      <label>γ — Gamma <span class="hint">معدل التعافي</span></label>
+      <label>γ — Gamma <span class="hint">Recovery rate</span></label>
       <input type="number" id="inp-gamma" value="0.05" min="0" step="0.001" placeholder="0.05"/>
     </div>
     <div class="input-group">
-      <label>Days — الأيام <span class="hint">مدة المحاكاة</span></label>
+      <label>Days <span class="hint">Simulation duration</span></label>
       <input type="number" id="inp-days" value="60" min="1" max="365" step="1" placeholder="60"/>
     </div>
 
@@ -457,10 +457,10 @@
 
     <button class="btn-run" onclick="runSimulation()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5,3 19,12 5,21"/></svg>
-      تشغيل المحاكاة
+      Run Simulation
       <div class="spinner" id="spinner"></div>
     </button>
-    <button class="btn-reset" onclick="resetAll()">↺ إعادة تعيين</button>
+    <button class="btn-reset" onclick="resetAll()">↺ Reset</button>
   </div>
 
   <!-- RESULTS -->
@@ -468,7 +468,7 @@
     <div class="card">
       <div class="empty">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-        <p>أدخل المعاملات واضغط <strong>تشغيل المحاكاة</strong> لعرض النتائج</p>
+        <p>Enter the parameters and press <strong>Run Simulation</strong> to display results</p>
       </div>
     </div>
   </div>
@@ -476,7 +476,12 @@
 </div>
 
 <footer>
-  نموذج SIR — <strong>Susceptible · Infected · Recovered</strong> — طريقة أويلر العددية
+  SIR Model — <strong>Susceptible · Infected · Recovered</strong> — Euler Numerical Method
+  <br/>
+  <span style="display:inline-block;margin-top:6px;font-size:0.78rem;">
+    ✦ Created by student <strong style="color:var(--accent1);">Teeba Mohammed Khalde</strong>
+    <span style="color:var(--text-muted);">(nextpro)</span> ✦
+  </span>
 </footer>
 
 <script>
@@ -518,20 +523,20 @@ function runSimulation() {
     <!-- STATS -->
     <div class="card">
       <div class="card-header">
-        <h2>📊 النتائج النهائية (اليوم ${lastRow.day})</h2>
-        <span class="badge">ذروة الإصابة: يوم ${peakRow.day}</span>
+        <h2>📊 Final Results (Day ${lastRow.day})</h2>
+        <span class="badge">Peak Infection: Day ${peakRow.day}</span>
       </div>
       <div class="stats-row">
         <div class="stat">
-          <div class="stat-label">S – المعرّضون</div>
+          <div class="stat-label">S – Susceptible</div>
           <div class="stat-value s">${lastRow.S.toLocaleString()}</div>
         </div>
         <div class="stat">
-          <div class="stat-label">I – المصابون</div>
+          <div class="stat-label">I – Infected</div>
           <div class="stat-value i">${lastRow.I.toLocaleString()}</div>
         </div>
         <div class="stat">
-          <div class="stat-label">R – المتعافون</div>
+          <div class="stat-label">R – Recovered</div>
           <div class="stat-value r">${lastRow.R.toLocaleString()}</div>
         </div>
       </div>
@@ -539,7 +544,7 @@ function runSimulation() {
 
     <!-- CHART -->
     <div class="card">
-      <div class="card-header"><h2>📈 منحنيات SIR</h2></div>
+      <div class="card-header"><h2>📈 SIR Curves</h2></div>
       <div class="chart-wrap">
         <canvas id="sir-chart" height="280"></canvas>
       </div>
@@ -547,15 +552,15 @@ function runSimulation() {
 
     <!-- TABLE -->
     <div class="card">
-      <div class="card-header"><h2>📋 جدول البيانات اليومية</h2></div>
+      <div class="card-header"><h2>📋 Daily Data Table</h2></div>
       <div class="table-wrap">
         <table>
           <thead>
             <tr>
-              <th>اليوم</th>
-              <th>S – معرّضون</th>
-              <th>I – مصابون</th>
-              <th>R – متعافون</th>
+              <th>Day</th>
+              <th>S – Susceptible</th>
+              <th>I – Infected</th>
+              <th>R – Recovered</th>
             </tr>
           </thead>
           <tbody id="tbl-body"></tbody>
@@ -633,12 +638,12 @@ function runSimulation() {
       },
       scales: {
         x: {
-          title: { display: true, text: 'الأيام', font: { family: 'Tajawal', size: 12 } },
+          title: { display: true, text: 'Days', font: { family: 'Inter', size: 12 } },
           grid: { color: 'rgba(0,0,0,0.05)' },
           ticks: { font: { family: 'Space Mono', size: 10 }, maxTicksLimit: 12 }
         },
         y: {
-          title: { display: true, text: 'عدد الأفراد', font: { family: 'Tajawal', size: 12 } },
+          title: { display: true, text: 'Population', font: { family: 'Inter', size: 12 } },
           grid: { color: 'rgba(0,0,0,0.05)' },
           ticks: { font: { family: 'Space Mono', size: 10 }, callback: v => v.toLocaleString() }
         }
@@ -659,7 +664,7 @@ function resetAll() {
     <div class="card">
       <div class="empty">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-        <p>أدخل المعاملات واضغط <strong>تشغيل المحاكاة</strong> لعرض النتائج</p>
+        <p>Enter the parameters and press <strong>Run Simulation</strong> to display results</p>
       </div>
     </div>`;
 }
