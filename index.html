@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SIR Virus Simulation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --surface: #f7f8fc;
+      --card: #ffffff;
+      --border: #e2e6f0;
+      --accent1: #2563eb;
+      --accent2: #16a34a;
+      --accent3: #dc2626;
+      --text: #111827;
+      --text-muted: #6b7280;
+      --shadow: 0 4px 32px rgba(37,99,235,0.08);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Tajawal', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ─── HEADER ─── */
+    header {
+      background: var(--bg);
+      border-bottom: 2px solid var(--border);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 70px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(37,99,235,0.06);
+    }
+
+    .logo {
+      font-family: 'Space Mono', monospace;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--accent1);
+      letter-spacing: -1px;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .logo span { color: var(--accent3); }
+
+    .badge {
+      font-size: 0.72rem;
+      background: #eff6ff;
+      color: var(--accent1);
+      border: 1px solid #bfdbfe;
+      border-radius: 99px;
+      padding: 3px 12px;
+      font-family: 'Space Mono', monospace;
+    }
+
+    /* ─── HERO ─── */
+    .hero {
+      text-align: center;
+      padding: 4rem 2rem 2rem;
+      background: linear-gradient(180deg, #eff6ff 0%, #ffffff 100%);
+      border-bottom: 1px solid var(--border);
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 900;
+      color: var(--text);
+      line-height: 1.15;
+      margin-bottom: 0.75rem;
+    }
+    .hero h1 em {
+      font-style: normal;
+      color: var(--accent1);
+    }
+    .hero p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      max-width: 520px;
+      margin: 0 auto 1.5rem;
+      line-height: 1.7;
+    }
+    .hero-tags {
+      display: flex;
+      justify-content: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.8rem;
+      border-radius: 99px;
+      padding: 4px 14px;
+      font-weight: 700;
+      font-family: 'Space Mono', monospace;
+    }
+    .tag-s { background: #dbeafe; color: #1d4ed8; }
+    .tag-i { background: #fee2e2; color: #b91c1c; }
+    .tag-r { background: #dcfce7; color: #15803d; }
+
+    /* ─── MAIN LAYOUT ─── */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem;
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    @media (max-width: 800px) {
+      .container { grid-template-columns: 1fr; }
+    }
+
+    /* ─── PANEL (inputs) ─── */
+    .panel {
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      padding: 1.8rem 1.5rem;
+      position: sticky;
+      top: 86px;
+    }
+
+    .panel-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 1.4rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .panel-title svg { width: 18px; height: 18px; }
+
+    .input-group {
+      margin-bottom: 1rem;
+    }
+    .input-group label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.88rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+      color: var(--text);
+    }
+    .input-group label .hint {
+      font-weight: 400;
+      color: var(--text-muted);
+      font-size: 0.78rem;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 0.6rem 0.9rem;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.95rem;
+      color: var(--text);
+      background: var(--surface);
+      transition: border-color 0.2s, box-shadow 0.2s;
+      direction: ltr;
+    }
+    input[type="number"]:focus {
+      outline: none;
+      border-color: var(--accent1);
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+      background: #fff;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 1.2rem 0;
+    }
+
+    .btn-run {
+      width: 100%;
+      padding: 0.85rem;
+      background: var(--accent1);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 16px rgba(37,99,235,0.25);
+    }
+    .btn-run:hover { background: #1d4ed8; box-shadow: 0 6px 20px rgba(37,99,235,0.35); }
+    .btn-run:active { transform: scale(0.98); }
+    .btn-run svg { width: 18px; height: 18px; }
+
+    .btn-reset {
+      width: 100%;
+      margin-top: 0.6rem;
+      padding: 0.7rem;
+      background: var(--surface);
+      color: var(--text-muted);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-reset:hover { background: #e5e7eb; color: var(--text); }
+
+    /* ─── RESULTS PANEL ─── */
+    .results {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 1.1rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface);
+    }
+    .card-header h2 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Stats row */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border-bottom: 1.5px solid var(--border);
+    }
+    .stat {
+      background: var(--card);
+      padding: 1.2rem 1rem;
+      text-align: center;
+    }
+    .stat-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+    }
+    .stat-value {
+      font-family: 'Space Mono', monospace;
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+    .stat-value.s { color: var(--accent1); }
+    .stat-value.i { color: var(--accent3); }
+    .stat-value.r { color: var(--accent2); }
+
+    /* Chart */
+    .chart-wrap {
+      padding: 1.5rem;
+    }
+
+    /* Table */
+    .table-wrap {
+      max-height: 360px;
+      overflow-y: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.82rem;
+    }
+    thead th {
+      background: var(--surface);
+      padding: 0.7rem 1.2rem;
+      text-align: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      position: sticky;
+      top: 0;
+      border-bottom: 1.5px solid var(--border);
+    }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:hover { background: #f0f6ff; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody td { padding: 0.6rem 1.2rem; text-align: center; }
+    tbody td.day { color: var(--text-muted); font-weight: 700; }
+    tbody td.s-val { color: var(--accent1); }
+    tbody td.i-val { color: var(--accent3); }
+    tbody td.r-val { color: var(--accent2); }
+
+    /* Empty state */
+    .empty {
+      padding: 3rem 1.5rem;
+      text-align: center;
+      color: var(--text-muted);
+    }
+    .empty svg {
+      width: 48px; height: 48px;
+      margin: 0 auto 1rem;
+      opacity: 0.25;
+      display: block;
+    }
+    .empty p { font-size: 0.95rem; }
+
+    /* Spinner */
+    .spinner {
+      display: none;
+      width: 20px; height: 20px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 99px; }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      border-top: 1px solid var(--border);
+      margin-top: 1rem;
+    }
+    footer strong { color: var(--accent1); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">SIR<span>.</span>sim</div>
+  <span class="badge">Euler Method v1.0</span>
+</header>
+
+<div class="hero">
+  <h1>محاكاة انتشار الفيروسات<br/><em>نموذج SIR</em></h1>
+  <p>أدخل معاملات النموذج وشاهد كيف ينتشر المرض عبر الزمن باستخدام طريقة أويلر العددية</p>
+  <div class="hero-tags">
+    <span class="tag tag-s">🔵 S – Susceptible</span>
+    <span class="tag tag-i">🔴 I – Infected</span>
+    <span class="tag tag-r">🟢 R – Recovered</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- INPUT PANEL -->
+  <div class="panel">
+    <div class="panel-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+      معاملات المحاكاة
+    </div>
+
+    <div class="input-group">
+      <label>S — المعرّضون <span class="hint">Susceptible</span></label>
+      <input type="number" id="inp-S" value="990" min="0" step="1" placeholder="990"/>
+    </div>
+    <div class="input-group">
+      <label>I — المصابون <span class="hint">Infected</span></label>
+      <input type="number" id="inp-I" value="10" min="0" step="1" placeholder="10"/>
+    </div>
+    <div class="input-group">
+      <label>R — المتعافون <span class="hint">Recovered</span></label>
+      <input type="number" id="inp-R" value="0" min="0" step="1" placeholder="0"/>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="input-group">
+      <label>β — Beta <span class="hint">معدل الانتقال</span></label>
+      <input type="number" id="inp-beta" value="0.0003" min="0" step="0.0001" placeholder="0.0003"/>
+    </div>
+    <div class="input-group">
+      <label>γ — Gamma <span class="hint">معدل التعافي</span></label>
+      <input type="number" id="inp-gamma" value="0.05" min="0" step="0.001" placeholder="0.05"/>
+    </div>
+    <div class="input-group">
+      <label>Days — الأيام <span class="hint">مدة المحاكاة</span></label>
+      <input type="number" id="inp-days" value="60" min="1" max="365" step="1" placeholder="60"/>
+    </div>
+
+    <div class="divider"></div>
+
+    <button class="btn-run" onclick="runSimulation()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5,3 19,12 5,21"/></svg>
+      تشغيل المحاكاة
+      <div class="spinner" id="spinner"></div>
+    </button>
+    <button class="btn-reset" onclick="resetAll()">↺ إعادة تعيين</button>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="results" id="results">
+    <div class="card">
+      <div class="empty">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+        <p>أدخل المعاملات واضغط <strong>تشغيل المحاكاة</strong> لعرض النتائج</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  نموذج SIR — <strong>Susceptible · Infected · Recovered</strong> — طريقة أويلر العددية
+</footer>
+
+<script>
+let chartInstance = null;
+
+function runSimulation() {
+  const S0     = parseFloat(document.getElementById('inp-S').value)     || 0;
+  const I0     = parseFloat(document.getElementById('inp-I').value)     || 0;
+  const R0val  = parseFloat(document.getElementById('inp-R').value)     || 0;
+  const beta   = parseFloat(document.getElementById('inp-beta').value)  || 0;
+  const gamma  = parseFloat(document.getElementById('inp-gamma').value) || 0;
+  const days   = parseInt(document.getElementById('inp-days').value)    || 1;
+
+  // ─── Euler simulation ───
+  let S = S0, I = I0, R = R0val;
+  const dt = 0.1;
+  const rows = [];          // {day, S, I, R}
+  let t = 0, day = 0;
+
+  while (day <= days) {
+    rows.push({ day, S: +S.toFixed(2), I: +I.toFixed(2), R: +R.toFixed(2) });
+    const dS = -beta * S * I;
+    const dI =  beta * S * I - gamma * I;
+    const dR =  gamma * I;
+    S += dS * dt; if (S < 0) S = 0;
+    I += dI * dt; if (I < 0) I = 0;
+    R += dR * dt; if (R < 0) R = 0;
+    t += dt;
+    if (Math.abs(t - Math.round(t)) < dt) day++;
+  }
+
+  // peak infected
+  const peakRow = rows.reduce((a, b) => b.I > a.I ? b : a, rows[0]);
+  const lastRow = rows[rows.length - 1];
+
+  // ─── Render ───
+  const container = document.getElementById('results');
+  container.innerHTML = `
+    <!-- STATS -->
+    <div class="card">
+      <div class="card-header">
+        <h2>📊 النتائج النهائية (اليوم ${lastRow.day})</h2>
+        <span class="badge">ذروة الإصابة: يوم ${peakRow.day}</span>
+      </div>
+      <div class="stats-row">
+        <div class="stat">
+          <div class="stat-label">S – المعرّضون</div>
+          <div class="stat-value s">${lastRow.S.toLocaleString()}</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">I – المصابون</div>
+          <div class="stat-value i">${lastRow.I.toLocaleString()}</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">R – المتعافون</div>
+          <div class="stat-value r">${lastRow.R.toLocaleString()}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHART -->
+    <div class="card">
+      <div class="card-header"><h2>📈 منحنيات SIR</h2></div>
+      <div class="chart-wrap">
+        <canvas id="sir-chart" height="280"></canvas>
+      </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="card">
+      <div class="card-header"><h2>📋 جدول البيانات اليومية</h2></div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>اليوم</th>
+              <th>S – معرّضون</th>
+              <th>I – مصابون</th>
+              <th>R – متعافون</th>
+            </tr>
+          </thead>
+          <tbody id="tbl-body"></tbody>
+        </table>
+      </div>
+    </div>
+  `;
+
+  // Fill table
+  const tbody = document.getElementById('tbl-body');
+  rows.forEach(r => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="day">${r.day}</td>
+      <td class="s-val">${r.S.toLocaleString()}</td>
+      <td class="i-val">${r.I.toLocaleString()}</td>
+      <td class="r-val">${r.R.toLocaleString()}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // Draw chart
+  if (chartInstance) chartInstance.destroy();
+  const ctx = document.getElementById('sir-chart').getContext('2d');
+  chartInstance = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: rows.map(r => r.day),
+      datasets: [
+        {
+          label: 'S – Susceptible',
+          data: rows.map(r => r.S),
+          borderColor: '#2563eb',
+          backgroundColor: 'rgba(37,99,235,0.08)',
+          borderWidth: 2.5,
+          pointRadius: 0,
+          tension: 0.4,
+          fill: true,
+        },
+        {
+          label: 'I – Infected',
+          data: rows.map(r => r.I),
+          borderColor: '#dc2626',
+          backgroundColor: 'rgba(220,38,38,0.08)',
+          borderWidth: 2.5,
+          pointRadius: 0,
+          tension: 0.4,
+          fill: true,
+        },
+        {
+          label: 'R – Recovered',
+          data: rows.map(r => r.R),
+          borderColor: '#16a34a',
+          backgroundColor: 'rgba(22,163,74,0.08)',
+          borderWidth: 2.5,
+          pointRadius: 0,
+          tension: 0.4,
+          fill: true,
+        },
+      ]
+    },
+    options: {
+      responsive: true,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: {
+          position: 'top',
+          labels: { font: { family: 'Space Mono', size: 11 }, usePointStyle: true, pointStyleWidth: 8 }
+        },
+        tooltip: {
+          callbacks: {
+            label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y.toLocaleString(undefined,{maximumFractionDigits:1})}`
+          }
+        }
+      },
+      scales: {
+        x: {
+          title: { display: true, text: 'الأيام', font: { family: 'Tajawal', size: 12 } },
+          grid: { color: 'rgba(0,0,0,0.05)' },
+          ticks: { font: { family: 'Space Mono', size: 10 }, maxTicksLimit: 12 }
+        },
+        y: {
+          title: { display: true, text: 'عدد الأفراد', font: { family: 'Tajawal', size: 12 } },
+          grid: { color: 'rgba(0,0,0,0.05)' },
+          ticks: { font: { family: 'Space Mono', size: 10 }, callback: v => v.toLocaleString() }
+        }
+      }
+    }
+  });
+}
+
+function resetAll() {
+  document.getElementById('inp-S').value     = '990';
+  document.getElementById('inp-I').value     = '10';
+  document.getElementById('inp-R').value     = '0';
+  document.getElementById('inp-beta').value  = '0.0003';
+  document.getElementById('inp-gamma').value = '0.05';
+  document.getElementById('inp-days').value  = '60';
+  if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
+  document.getElementById('results').innerHTML = `
+    <div class="card">
+      <div class="empty">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+        <p>أدخل المعاملات واضغط <strong>تشغيل المحاكاة</strong> لعرض النتائج</p>
+      </div>
+    </div>`;
+}
+</script>
+</body>
+</html>
